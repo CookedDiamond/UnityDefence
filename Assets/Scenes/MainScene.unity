@@ -618,7 +618,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: 6832901338706419937, guid: 726f1e993bd868f499b917d28638cd71, type: 3}
-  delay: 100000
+  delay: 5
 --- !u!1001 &94377327
 PrefabInstance:
   m_ObjectHideFlags: 0
