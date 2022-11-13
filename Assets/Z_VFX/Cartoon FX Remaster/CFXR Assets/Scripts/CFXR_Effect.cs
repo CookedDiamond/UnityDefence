@@ -19,36 +19,31 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-namespace CartoonFX
-{
+namespace CartoonFX {
 	[RequireComponent(typeof(ParticleSystem))]
 	[DisallowMultipleComponent]
-	public partial class CFXR_Effect : MonoBehaviour
-	{
+	public partial class CFXR_Effect : MonoBehaviour {
 		// Change this value to easily tune the camera shake strength for all effects
 		const float GLOBAL_CAMERA_SHAKE_MULTIPLIER = 1.0f;
 
 #if UNITY_EDITOR
 		[InitializeOnLoadMethod]
-		static void InitGlobalOptions()
-		{
+		static void InitGlobalOptions() {
 			AnimatedLight.editorPreview = EditorPrefs.GetBool("CFXR Light EditorPreview", true);
-	#if !DISABLE_CAMERA_SHAKE
+#if !DISABLE_CAMERA_SHAKE
 			CameraShake.editorPreview = EditorPrefs.GetBool("CFXR CameraShake EditorPreview", true);
-	#endif
+#endif
 		}
 #endif
 
-		public enum ClearBehavior
-		{
+		public enum ClearBehavior {
 			None,
 			Disable,
 			Destroy
 		}
 
 		[System.Serializable]
-		public class AnimatedLight
-		{
+		public class AnimatedLight {
 			static public bool editorPreview = true;
 
 			public Light light;
@@ -82,69 +77,55 @@ namespace CartoonFX
 			public bool perlinColor;
 			public float perlinColorSpeed = 1f;
 
-			public void animate(float time)
-			{
+			public void animate(float time) {
 #if UNITY_EDITOR
-				if (!editorPreview && !EditorApplication.isPlaying)
-				{
+				if (!editorPreview && !EditorApplication.isPlaying) {
 					return;
 				}
 #endif
 
-				if (light != null)
-				{
-					if (animateIntensity)
-					{
-						float delta = loop ? Mathf.Clamp01((time % intensityDuration)/intensityDuration) : Mathf.Clamp01(time/intensityDuration);
+				if (light != null) {
+					if (animateIntensity) {
+						float delta = loop ? Mathf.Clamp01((time % intensityDuration) / intensityDuration) : Mathf.Clamp01(time / intensityDuration);
 						delta = perlinIntensity ? Mathf.PerlinNoise(Time.time * perlinIntensitySpeed, 0f) : intensityCurve.Evaluate(delta);
 						light.intensity = Mathf.LerpUnclamped(intensityEnd, intensityStart, delta);
 
-						if (fadeIn && time < fadeInDuration)
-						{
+						if (fadeIn && time < fadeInDuration) {
 							light.intensity *= Mathf.Clamp01(time / fadeInDuration);
 						}
 					}
 
-					if (animateRange)
-					{
-						float delta = loop ? Mathf.Clamp01((time % rangeDuration)/rangeDuration) : Mathf.Clamp01(time/rangeDuration);
+					if (animateRange) {
+						float delta = loop ? Mathf.Clamp01((time % rangeDuration) / rangeDuration) : Mathf.Clamp01(time / rangeDuration);
 						delta = perlinRange ? Mathf.PerlinNoise(Time.time * perlinRangeSpeed, 10f) : rangeCurve.Evaluate(delta);
 						light.range = Mathf.LerpUnclamped(rangeEnd, rangeStart, delta);
 					}
 
-					if (animateColor)
-					{
-						float delta = loop ? Mathf.Clamp01((time % colorDuration)/colorDuration) : Mathf.Clamp01(time/colorDuration);
+					if (animateColor) {
+						float delta = loop ? Mathf.Clamp01((time % colorDuration) / colorDuration) : Mathf.Clamp01(time / colorDuration);
 						delta = perlinColor ? Mathf.PerlinNoise(Time.time * perlinColorSpeed, 0f) : colorCurve.Evaluate(delta);
 						light.color = colorGradient.Evaluate(delta);
 					}
 				}
 			}
 
-			public void animateFadeOut(float time)
-			{
-				if (fadeOut && light != null)
-				{
+			public void animateFadeOut(float time) {
+				if (fadeOut && light != null) {
 					light.intensity *= 1.0f - Mathf.Clamp01(time / fadeOutDuration);
 				}
 			}
 
-			public void reset()
-			{
-				if (light != null)
-				{
-					if (animateIntensity)
-					{
+			public void reset() {
+				if (light != null) {
+					if (animateIntensity) {
 						light.intensity = (fadeIn || fadeOut) ? 0 : intensityEnd;
 					}
 
-					if (animateRange)
-					{
+					if (animateRange) {
 						light.range = rangeEnd;
 					}
 
-					if (animateColor)
-					{
+					if (animateColor) {
 						light.color = colorGradient.Evaluate(1f);
 					}
 				}
@@ -153,8 +134,7 @@ namespace CartoonFX
 			#region Animated Light Property Drawer
 #if UNITY_EDITOR
 			[CustomPropertyDrawer(typeof(AnimatedLight))]
-			public class AnimatedLightDrawer : PropertyDrawer
-			{
+			public class AnimatedLightDrawer : PropertyDrawer {
 				SerializedProperty light;
 
 				SerializedProperty loop;
@@ -186,38 +166,37 @@ namespace CartoonFX
 				SerializedProperty perlinColor;
 				SerializedProperty perlinColorSpeed;
 
-				void fetchProperties(SerializedProperty property)
-				{
-					light                 = property.FindPropertyRelative("light");
+				void fetchProperties(SerializedProperty property) {
+					light = property.FindPropertyRelative("light");
 
-					loop                  = property.FindPropertyRelative("loop");
+					loop = property.FindPropertyRelative("loop");
 
-					animateIntensity      = property.FindPropertyRelative("animateIntensity");
-					intensityStart        = property.FindPropertyRelative("intensityStart");
-					intensityEnd          = property.FindPropertyRelative("intensityEnd");
-					intensityDuration     = property.FindPropertyRelative("intensityDuration");
-					intensityCurve        = property.FindPropertyRelative("intensityCurve");
-					perlinIntensity       = property.FindPropertyRelative("perlinIntensity");
-					perlinIntensitySpeed  = property.FindPropertyRelative("perlinIntensitySpeed");
-					fadeIn                = property.FindPropertyRelative("fadeIn");
-					fadeInDuration        = property.FindPropertyRelative("fadeInDuration");
-					fadeOut               = property.FindPropertyRelative("fadeOut");
-					fadeOutDuration       = property.FindPropertyRelative("fadeOutDuration");
+					animateIntensity = property.FindPropertyRelative("animateIntensity");
+					intensityStart = property.FindPropertyRelative("intensityStart");
+					intensityEnd = property.FindPropertyRelative("intensityEnd");
+					intensityDuration = property.FindPropertyRelative("intensityDuration");
+					intensityCurve = property.FindPropertyRelative("intensityCurve");
+					perlinIntensity = property.FindPropertyRelative("perlinIntensity");
+					perlinIntensitySpeed = property.FindPropertyRelative("perlinIntensitySpeed");
+					fadeIn = property.FindPropertyRelative("fadeIn");
+					fadeInDuration = property.FindPropertyRelative("fadeInDuration");
+					fadeOut = property.FindPropertyRelative("fadeOut");
+					fadeOutDuration = property.FindPropertyRelative("fadeOutDuration");
 
-					animateRange          = property.FindPropertyRelative("animateRange");
-					rangeStart            = property.FindPropertyRelative("rangeStart");
-					rangeEnd              = property.FindPropertyRelative("rangeEnd");
-					rangeDuration         = property.FindPropertyRelative("rangeDuration");
-					rangeCurve            = property.FindPropertyRelative("rangeCurve");
-					perlinRange           = property.FindPropertyRelative("perlinRange");
-					perlinRangeSpeed      = property.FindPropertyRelative("perlinRangeSpeed");
+					animateRange = property.FindPropertyRelative("animateRange");
+					rangeStart = property.FindPropertyRelative("rangeStart");
+					rangeEnd = property.FindPropertyRelative("rangeEnd");
+					rangeDuration = property.FindPropertyRelative("rangeDuration");
+					rangeCurve = property.FindPropertyRelative("rangeCurve");
+					perlinRange = property.FindPropertyRelative("perlinRange");
+					perlinRangeSpeed = property.FindPropertyRelative("perlinRangeSpeed");
 
-					animateColor          = property.FindPropertyRelative("animateColor");
-					colorGradient         = property.FindPropertyRelative("colorGradient");
-					colorDuration         = property.FindPropertyRelative("colorDuration");
-					colorCurve            = property.FindPropertyRelative("colorCurve");
-					perlinColor           = property.FindPropertyRelative("perlinColor");
-					perlinColorSpeed      = property.FindPropertyRelative("perlinColorSpeed");
+					animateColor = property.FindPropertyRelative("animateColor");
+					colorGradient = property.FindPropertyRelative("colorGradient");
+					colorDuration = property.FindPropertyRelative("colorDuration");
+					colorCurve = property.FindPropertyRelative("colorCurve");
+					perlinColor = property.FindPropertyRelative("perlinColor");
+					perlinColorSpeed = property.FindPropertyRelative("perlinColorSpeed");
 				}
 
 				static GUIContent[] ModePopupLabels = new GUIContent[] { new GUIContent("Curve"), new GUIContent("Perlin Noise") };
@@ -228,20 +207,17 @@ namespace CartoonFX
 				const float INDENT_WIDTH = 15f;
 				const float PADDING = 4f;
 
-				void startIndent(ref Rect rect)
-				{
+				void startIndent(ref Rect rect) {
 					EditorGUIUtility.labelWidth -= INDENT_WIDTH;
 					rect.xMin += INDENT_WIDTH;
 				}
 
-				void endIndent(ref Rect rect)
-				{
+				void endIndent(ref Rect rect) {
 					EditorGUIUtility.labelWidth += INDENT_WIDTH;
 					rect.xMin -= INDENT_WIDTH;
 				}
 
-				public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
-				{
+				public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
 					fetchProperties(property);
 
 					Rect rect = EditorGUI.IndentedRect(position);
@@ -251,8 +227,7 @@ namespace CartoonFX
 					//lineRect.y -= 2;
 					//EditorGUI.DrawRect(lineRect, Color.gray);
 
-					if (Event.current.type == EventType.Repaint)
-					{
+					if (Event.current.type == EventType.Repaint) {
 						EditorStyles.helpBox.Draw(rect, GUIContent.none, 0);
 					}
 
@@ -267,8 +242,7 @@ namespace CartoonFX
 					EditorGUI.PropertyField(rect, loop); rect.y += propSpace;
 
 					EditorGUI.PropertyField(rect, animateIntensity); rect.y += propSpace;
-					if (animateIntensity.boolValue)
-					{
+					if (animateIntensity.boolValue) {
 						startIndent(ref rect);
 						{
 
@@ -276,23 +250,19 @@ namespace CartoonFX
 							EditorGUI.PropertyField(rect, intensityEnd); rect.y += propSpace;
 
 							int val = EditorGUI.Popup(rect, IntensityModeLabel, perlinIntensity.boolValue ? 1 : 0, ModePopupLabels); rect.y += propSpace;
-							if (val == 1 && !perlinIntensity.boolValue)
-							{
+							if (val == 1 && !perlinIntensity.boolValue) {
 								perlinIntensity.boolValue = true;
 							}
-							else if (val == 0 && perlinIntensity.boolValue)
-							{
+							else if (val == 0 && perlinIntensity.boolValue) {
 								perlinIntensity.boolValue = false;
 							}
 
 							startIndent(ref rect);
 							{
-								if (perlinIntensity.boolValue)
-								{
+								if (perlinIntensity.boolValue) {
 									EditorGUI.PropertyField(rect, perlinIntensitySpeed); rect.y += propSpace;
 								}
-								else
-								{
+								else {
 									EditorGUI.PropertyField(rect, intensityDuration); rect.y += propSpace;
 									EditorGUI.PropertyField(rect, intensityCurve); rect.y += propSpace;
 								}
@@ -300,16 +270,14 @@ namespace CartoonFX
 							endIndent(ref rect);
 
 							EditorGUI.PropertyField(rect, fadeIn); rect.y += propSpace;
-							if (fadeIn.boolValue)
-							{
+							if (fadeIn.boolValue) {
 								startIndent(ref rect);
 								EditorGUI.PropertyField(rect, fadeInDuration); rect.y += propSpace;
 								endIndent(ref rect);
 							}
 
 							EditorGUI.PropertyField(rect, fadeOut); rect.y += propSpace;
-							if (fadeOut.boolValue)
-							{
+							if (fadeOut.boolValue) {
 								startIndent(ref rect);
 								EditorGUI.PropertyField(rect, fadeOutDuration); rect.y += propSpace;
 								endIndent(ref rect);
@@ -320,31 +288,26 @@ namespace CartoonFX
 					}
 
 					EditorGUI.PropertyField(rect, animateRange); rect.y += propSpace;
-					if (animateRange.boolValue)
-					{
+					if (animateRange.boolValue) {
 						startIndent(ref rect);
 						{
 							EditorGUI.PropertyField(rect, rangeStart); rect.y += propSpace;
 							EditorGUI.PropertyField(rect, rangeEnd); rect.y += propSpace;
 
 							int val = EditorGUI.Popup(rect, RangeModeLabel, perlinRange.boolValue ? 1 : 0, ModePopupLabels); rect.y += propSpace;
-							if (val == 1 && !perlinRange.boolValue)
-							{
+							if (val == 1 && !perlinRange.boolValue) {
 								perlinRange.boolValue = true;
 							}
-							else if (val == 0 && perlinRange.boolValue)
-							{
+							else if (val == 0 && perlinRange.boolValue) {
 								perlinRange.boolValue = false;
 							}
 
 							startIndent(ref rect);
 							{
-								if (perlinRange.boolValue)
-								{
+								if (perlinRange.boolValue) {
 									EditorGUI.PropertyField(rect, perlinRangeSpeed); rect.y += propSpace;
 								}
-								else
-								{
+								else {
 									EditorGUI.PropertyField(rect, rangeDuration); rect.y += propSpace;
 									EditorGUI.PropertyField(rect, rangeCurve); rect.y += propSpace;
 								}
@@ -355,32 +318,27 @@ namespace CartoonFX
 					}
 
 					EditorGUI.PropertyField(rect, animateColor); rect.y += propSpace;
-					if (animateColor.boolValue)
-					{
+					if (animateColor.boolValue) {
 						startIndent(ref rect);
 						{
 
 							EditorGUI.PropertyField(rect, colorGradient); rect.y += propSpace;
 
 							int val = EditorGUI.Popup(rect, ColorModeLabel, perlinColor.boolValue ? 1 : 0, ModePopupLabels); rect.y += propSpace;
-							if (val == 1 && !perlinColor.boolValue)
-							{
+							if (val == 1 && !perlinColor.boolValue) {
 								perlinColor.boolValue = true;
 							}
-							else if (val == 0 && perlinColor.boolValue)
-							{
+							else if (val == 0 && perlinColor.boolValue) {
 								perlinColor.boolValue = false;
 							}
 
 							startIndent(ref rect);
 							{
 
-								if (perlinColor.boolValue)
-								{
+								if (perlinColor.boolValue) {
 									EditorGUI.PropertyField(rect, perlinColorSpeed); rect.y += propSpace;
 								}
-								else
-								{
+								else {
 									EditorGUI.PropertyField(rect, colorDuration); rect.y += propSpace;
 									EditorGUI.PropertyField(rect, colorCurve); rect.y += propSpace;
 								}
@@ -392,21 +350,18 @@ namespace CartoonFX
 
 					EditorGUIUtility.labelWidth += INDENT_WIDTH;
 
-					if (GUI.changed)
-					{
+					if (GUI.changed) {
 						property.serializedObject.ApplyModifiedProperties();
 					}
 				}
 
-				public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-				{
+				public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
 					fetchProperties(property);
 
 					float propSpace = EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
 					int count = 5;
 
-					if (animateIntensity.boolValue)
-					{
+					if (animateIntensity.boolValue) {
 						count += 3;
 						count += perlinIntensity.boolValue ? 1 : 2;
 						count += 1;
@@ -415,14 +370,12 @@ namespace CartoonFX
 						count += fadeOut.boolValue ? 1 : 0;
 					}
 
-					if (animateRange.boolValue)
-					{
+					if (animateRange.boolValue) {
 						count += 3;
 						count += perlinRange.boolValue ? 1 : 2;
 					}
 
-					if (animateColor.boolValue)
-					{
+					if (animateColor.boolValue) {
 						count += 2;
 						count += perlinColor.boolValue ? 1 : 2;
 					}
@@ -459,57 +412,47 @@ namespace CartoonFX
 
 		// ================================================================================================================================
 
-		public void ResetState()
-		{
+		public void ResetState() {
 			time = 0f;
 			fadingOutStartTime = 0f;
 			isFadingOut = false;
 
 #if !DISABLE_LIGHTS
-			if (animatedLights != null)
-			{
-				foreach (var animLight in animatedLights)
-				{
+			if (animatedLights != null) {
+				foreach (var animLight in animatedLights) {
 					animLight.reset();
 				}
 			}
 #endif
 
 #if !DISABLE_CAMERA_SHAKE
-			if (cameraShake != null && cameraShake.enabled)
-			{
+			if (cameraShake != null && cameraShake.enabled) {
 				cameraShake.StopShake();
 			}
 #endif
 		}
 
 #if !DISABLE_CAMERA_SHAKE || !DISABLE_CLEAR_BEHAVIOR
-		void Awake()
-		{
-	#if !DISABLE_CAMERA_SHAKE
-			if (cameraShake != null && cameraShake.enabled)
-			{
+		void Awake() {
+#if !DISABLE_CAMERA_SHAKE
+			if (cameraShake != null && cameraShake.enabled) {
 				cameraShake.fetchCameras();
 			}
-	#endif
-	#if !DISABLE_CLEAR_BEHAVIOR
+#endif
+#if !DISABLE_CLEAR_BEHAVIOR
 			startFrameOffset = GlobalStartFrameOffset++;
 #endif
 			// Detect if world position needs to be passed to the shader
 			particleRenderer = this.GetComponent<ParticleSystemRenderer>();
-			if (particleRenderer.sharedMaterial != null && particleRenderer.sharedMaterial.IsKeywordEnabled("_CFXR_LIGHTING_WPOS_OFFSET"))
-			{ 
+			if (particleRenderer.sharedMaterial != null && particleRenderer.sharedMaterial.IsKeywordEnabled("_CFXR_LIGHTING_WPOS_OFFSET")) {
 				materialPropertyBlock = new MaterialPropertyBlock();
 			}
 		}
 #endif
 
-			void OnEnable()
-		{
-			foreach (var animLight in animatedLights)
-			{
-				if (animLight.light != null)
-				{
+		void OnEnable() {
+			foreach (var animLight in animatedLights) {
+				if (animLight.light != null) {
 #if !DISABLE_LIGHTS
 					animLight.light.enabled = !GlobalDisableLights;
 #else
@@ -519,8 +462,7 @@ namespace CartoonFX
 			}
 		}
 
-		void OnDisable()
-		{
+		void OnDisable() {
 			ResetState();
 		}
 
@@ -528,45 +470,36 @@ namespace CartoonFX
 		const int CHECK_EVERY_N_FRAME = 20;
 		static int GlobalStartFrameOffset = 0;
 		int startFrameOffset;
-		void Update()
-		{
+		void Update() {
 #if !DISABLE_LIGHTS || !DISABLE_CAMERA_SHAKE
 			time += Time.deltaTime;
 
 			Animate(time);
 
-			if (fadeOutReference != null && !fadeOutReference.isEmitting && (fadeOutReference.isPlaying || isFadingOut))
-			{
+			if (fadeOutReference != null && !fadeOutReference.isEmitting && (fadeOutReference.isPlaying || isFadingOut)) {
 				FadeOut(time);
 			}
 #endif
 #if !DISABLE_CLEAR_BEHAVIOR
-			if (clearBehavior != ClearBehavior.None)
-			{
-				if (rootParticleSystem == null)
-				{
+			if (clearBehavior != ClearBehavior.None) {
+				if (rootParticleSystem == null) {
 					rootParticleSystem = this.GetComponent<ParticleSystem>();
 				}
 
 				// Check isAlive every N frame, with an offset so that all active effects aren't checked at once
-				if ((Time.renderedFrameCount + startFrameOffset) % CHECK_EVERY_N_FRAME == 0)
-				{
-					if (!rootParticleSystem.IsAlive(true))
-					{
-						if (clearBehavior == ClearBehavior.Destroy)
-						{
+				if ((Time.renderedFrameCount + startFrameOffset) % CHECK_EVERY_N_FRAME == 0) {
+					if (!rootParticleSystem.IsAlive(true)) {
+						if (clearBehavior == ClearBehavior.Destroy) {
 							GameObject.Destroy(this.gameObject);
 						}
-						else
-						{
+						else {
 							this.gameObject.SetActive(false);
 						}
 					}
 				}
 			}
 #endif
-			if (materialPropertyBlock != null)
-			{
+			if (materialPropertyBlock != null) {
 				particleRenderer.GetPropertyBlock(materialPropertyBlock);
 				materialPropertyBlock.SetVector("_GameObjectWorldPosition", this.transform.position);
 				particleRenderer.SetPropertyBlock(materialPropertyBlock);
@@ -575,24 +508,19 @@ namespace CartoonFX
 #endif
 
 #if !DISABLE_LIGHTS || !DISABLE_CAMERA_SHAKE
-		public void Animate(float time)
-		{
+		public void Animate(float time) {
 #if !DISABLE_LIGHTS
-			if (animatedLights != null && !GlobalDisableLights)
-			{
-				foreach (var animLight in animatedLights)
-				{
+			if (animatedLights != null && !GlobalDisableLights) {
+				foreach (var animLight in animatedLights) {
 					animLight.animate(time);
 				}
 			}
 #endif
 
 #if !DISABLE_CAMERA_SHAKE
-			if (cameraShake != null && cameraShake.enabled && !GlobalDisableCameraShake)
-			{
+			if (cameraShake != null && cameraShake.enabled && !GlobalDisableCameraShake) {
 #if UNITY_EDITOR
-				if (!cameraShake.isShaking)
-				{
+				if (!cameraShake.isShaking) {
 					cameraShake.fetchCameras();
 				}
 #endif
@@ -605,21 +533,17 @@ namespace CartoonFX
 #if !DISABLE_LIGHTS
 		bool isFadingOut;
 		float fadingOutStartTime;
-		public void FadeOut(float time)
-		{
-			if (animatedLights == null)
-			{
+		public void FadeOut(float time) {
+			if (animatedLights == null) {
 				return;
 			}
 
-			if (!isFadingOut)
-			{
+			if (!isFadingOut) {
 				isFadingOut = true;
 				fadingOutStartTime = time;
 			}
 
-			foreach (var animLight in animatedLights)
-			{
+			foreach (var animLight in animatedLights) {
 				animLight.animateFadeOut(time - fadingOutStartTime);
 			}
 		}
@@ -630,12 +554,9 @@ namespace CartoonFX
 		// Detect when the Particle System is previewing and trigger this animation too
 
 		[System.NonSerialized] ParticleSystem _parentParticle;
-		ParticleSystem parentParticle
-		{
-			get
-			{
-				if (_parentParticle == null)
-				{
+		ParticleSystem parentParticle {
+			get {
+				if (_parentParticle == null) {
 					_parentParticle = this.GetComponent<ParticleSystem>();
 				}
 				return _parentParticle;
@@ -647,56 +568,45 @@ namespace CartoonFX
 		[System.NonSerialized] float particleTime;
 		[System.NonSerialized] float particleTimeUnwrapped;
 
-		void OnDestroy()
-		{
+		void OnDestroy() {
 			UnregisterEditorUpdate();
 		}
 
-		public void RegisterEditorUpdate()
-		{
+		public void RegisterEditorUpdate() {
 			var type = PrefabUtility.GetPrefabAssetType(this.gameObject);
 			var status = PrefabUtility.GetPrefabInstanceStatus(this.gameObject);
 
 			// Prefab in Project window
-			if ((type == PrefabAssetType.Regular || type == PrefabAssetType.Variant) && status == PrefabInstanceStatus.NotAPrefab)
-			{
+			if ((type == PrefabAssetType.Regular || type == PrefabAssetType.Variant) && status == PrefabInstanceStatus.NotAPrefab) {
 				return;
 			}
 
-			if (!editorUpdateRegistered)
-			{
+			if (!editorUpdateRegistered) {
 				EditorApplication.update += onEditorUpdate;
 				editorUpdateRegistered = true;
 			}
 		}
 
-		public void UnregisterEditorUpdate()
-		{
-			if (editorUpdateRegistered)
-			{
+		public void UnregisterEditorUpdate() {
+			if (editorUpdateRegistered) {
 				editorUpdateRegistered = false;
 				EditorApplication.update -= onEditorUpdate;
 			}
 			ResetState();
 		}
 
-		void onEditorUpdate()
-		{
-			if (EditorApplication.isPlayingOrWillChangePlaymode)
-			{
+		void onEditorUpdate() {
+			if (EditorApplication.isPlayingOrWillChangePlaymode) {
 				return;
 			}
 
-			if (this == null)
-			{
+			if (this == null) {
 				return;
 			}
 
 			var renderer = this.GetComponent<ParticleSystemRenderer>();
-			if (renderer.sharedMaterial != null && renderer.sharedMaterial.IsKeywordEnabled("_CFXR_LIGHTING_WPOS_OFFSET"))
-			{
-				if (materialPropertyBlock == null)
-				{
+			if (renderer.sharedMaterial != null && renderer.sharedMaterial.IsKeywordEnabled("_CFXR_LIGHTING_WPOS_OFFSET")) {
+				if (materialPropertyBlock == null) {
 					materialPropertyBlock = new MaterialPropertyBlock();
 				}
 
@@ -709,11 +619,9 @@ namespace CartoonFX
 			// because the parentParticle.time will be reset at each loop
 			float delta = parentParticle.time - particleTime;
 
-			if (delta < 0 && parentParticle.isPlaying)
-			{
+			if (delta < 0 && parentParticle.isPlaying) {
 				delta = parentParticle.main.duration + delta;
-				if (delta > 0.1 || delta < 0)
-				{
+				if (delta > 0.1 || delta < 0) {
 					// try to detect when "Restart" is pressed
 					ResetState();
 					particleTimeUnwrapped = 0;
@@ -722,28 +630,23 @@ namespace CartoonFX
 			}
 			particleTimeUnwrapped += delta;
 
-			if (particleTime != parentParticle.time)
-			{
+			if (particleTime != parentParticle.time) {
 #if !DISABLE_CAMERA_SHAKE
-				if (cameraShake != null && cameraShake.enabled && parentParticle.time < particleTime && parentParticle.time < 0.05f)
-				{
+				if (cameraShake != null && cameraShake.enabled && parentParticle.time < particleTime && parentParticle.time < 0.05f) {
 					cameraShake.StartShake();
 				}
 #endif
 #if !DISABLE_LIGHTS || !DISABLE_CAMERA_SHAKES
 				Animate(particleTimeUnwrapped);
 
-				if (!parentParticle.isEmitting)
-				{
+				if (!parentParticle.isEmitting) {
 					FadeOut(particleTimeUnwrapped);
 				}
 #endif
 			}
 
-			if (particleWasStopped != parentParticle.isStopped)
-			{
-				if (parentParticle.isStopped)
-				{
+			if (particleWasStopped != parentParticle.isStopped) {
+				if (parentParticle.isStopped) {
 					ResetState();
 				}
 				particleTimeUnwrapped = 0;
@@ -758,18 +661,14 @@ namespace CartoonFX
 #if UNITY_EDITOR
 	[CustomEditor(typeof(CFXR_Effect))]
 	[CanEditMultipleObjects]
-	public class CFXR_Effect_Editor : Editor
-	{
+	public class CFXR_Effect_Editor : Editor {
 		bool? lightEditorPreview;
 		bool? shakeEditorPreview;
 
 		GUIStyle _PaddedRoundedRect;
-		GUIStyle PaddedRoundedRect
-		{
-			get
-			{
-				if (_PaddedRoundedRect == null)
-				{
+		GUIStyle PaddedRoundedRect {
+			get {
+				if (_PaddedRoundedRect == null) {
 					_PaddedRoundedRect = new GUIStyle(EditorStyles.helpBox);
 					_PaddedRoundedRect.padding = new RectOffset(4, 4, 4, 4);
 				}
@@ -777,8 +676,7 @@ namespace CartoonFX
 			}
 		}
 
-		public override void OnInspectorGUI()
-		{
+		public override void OnInspectorGUI() {
 			GlobalOptionsGUI();
 
 #if DISABLE_CAMERA_SHAKE
@@ -788,32 +686,27 @@ namespace CartoonFX
 			base.OnInspectorGUI();
 		}
 
-		void GlobalOptionsGUI()
-		{
+		void GlobalOptionsGUI() {
 			EditorGUILayout.BeginVertical(PaddedRoundedRect);
 			{
 				GUILayout.Label("Editor Preview:", EditorStyles.boldLabel);
 
-				if (lightEditorPreview == null)
-				{
+				if (lightEditorPreview == null) {
 					lightEditorPreview = EditorPrefs.GetBool("CFXR Light EditorPreview", true);
 				}
 				bool lightPreview = EditorGUILayout.Toggle("Light Animations", lightEditorPreview.Value);
-				if (lightPreview != lightEditorPreview.Value)
-				{
+				if (lightPreview != lightEditorPreview.Value) {
 					lightEditorPreview = lightPreview;
 					EditorPrefs.SetBool("CFXR Light EditorPreview", lightPreview);
 					CFXR_Effect.AnimatedLight.editorPreview = lightPreview;
 				}
 
 #if !DISABLE_CAMERA_SHAKE
-				if (shakeEditorPreview == null)
-				{
+				if (shakeEditorPreview == null) {
 					shakeEditorPreview = EditorPrefs.GetBool("CFXR CameraShake EditorPreview", true);
 				}
 				bool shakePreview = EditorGUILayout.Toggle("Camera Shake", shakeEditorPreview.Value);
-				if (shakePreview != shakeEditorPreview.Value)
-				{
+				if (shakePreview != shakeEditorPreview.Value) {
 					shakeEditorPreview = shakePreview;
 					EditorPrefs.SetBool("CFXR CameraShake EditorPreview", shakePreview);
 					CFXR_Effect.CameraShake.editorPreview = shakePreview;
@@ -823,20 +716,15 @@ namespace CartoonFX
 			EditorGUILayout.EndVertical();
 		}
 
-		void OnEnable()
-		{
-			if (this.targets == null)
-			{
+		void OnEnable() {
+			if (this.targets == null) {
 				return;
 			}
 
-			foreach (var t in this.targets)
-			{
+			foreach (var t in this.targets) {
 				var cfxr_effect = t as CFXR_Effect;
-				if (cfxr_effect != null)
-				{
-					if (isPrefabSource(cfxr_effect.gameObject))
-					{
+				if (cfxr_effect != null) {
+					if (isPrefabSource(cfxr_effect.gameObject)) {
 						return;
 					}
 					cfxr_effect.RegisterEditorUpdate();
@@ -844,21 +732,16 @@ namespace CartoonFX
 			}
 		}
 
-		void OnDisable()
-		{
-			if (this.targets == null)
-			{
+		void OnDisable() {
+			if (this.targets == null) {
 				return;
 			}
 
-			foreach (var t in this.targets)
-			{
+			foreach (var t in this.targets) {
 				// Can be null if GameObject has been destroyed
 				var cfxr_effect = t as CFXR_Effect;
-				if (cfxr_effect != null)
-				{
-					if (isPrefabSource(cfxr_effect.gameObject))
-					{
+				if (cfxr_effect != null) {
+					if (isPrefabSource(cfxr_effect.gameObject)) {
 						return;
 					}
 					cfxr_effect.UnregisterEditorUpdate();
@@ -866,8 +749,7 @@ namespace CartoonFX
 			}
 		}
 
-		static bool isPrefabSource(GameObject gameObject)
-		{
+		static bool isPrefabSource(GameObject gameObject) {
 			var assetType = PrefabUtility.GetPrefabAssetType(gameObject);
 			var prefabType = PrefabUtility.GetPrefabInstanceStatus(gameObject);
 			return ((assetType == PrefabAssetType.Regular || assetType == PrefabAssetType.Variant) && prefabType == PrefabInstanceStatus.NotAPrefab);

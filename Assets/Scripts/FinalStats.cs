@@ -1,7 +1,4 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 /// <summary>
 /// Stores all the Stats for the player and calculates damage taken 
@@ -78,7 +75,6 @@ public class FinalStats {
 		// Set default values
 		damageNegation = new List<DamageNegation>();
 		// !dot Dodge
-		Console.WriteLine(dodge);
 		if (!dot) damage = dodge.getDamage(damage, damageNegation);
 		// Block
 

@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -36,7 +34,7 @@ public class StatsList : MonoBehaviour {
 		List<string> texts = new List<string>();
 		var all = finalStats.GetType().GetProperties();
 		foreach (var prop in all) {
-			print(" Name:" + prop.Name+ " Value:" + prop.GetValue(finalStats));
+			print(" Name:" + prop.Name + " Value:" + prop.GetValue(finalStats));
 			texts.Add(prop.Name + " " + prop.GetValue(finalStats));
 		}
 		lableTexts = texts.ToArray();

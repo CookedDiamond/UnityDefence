@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// It stores all base stats every player has wihtout any cost.
+/// It stores all base stats every player has wihtout any cost/ event.
 /// </summary>
 [CreateAssetMenu(fileName = "BaseStats", menuName = "ScriptableObjects/BaseStats", order = 1)]
 public class BaseStats : ScriptableObject {

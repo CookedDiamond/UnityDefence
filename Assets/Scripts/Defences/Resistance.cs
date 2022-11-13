@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 public class Resistance : Defence, IDefence {
 	public Resistance(List<Stat> _stats, BaseStats _baseStats) : base(_stats, _baseStats) {

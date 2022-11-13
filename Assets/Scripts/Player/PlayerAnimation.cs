@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerAnimation : MonoBehaviour {
@@ -14,10 +12,10 @@ public class PlayerAnimation : MonoBehaviour {
 
 
 	void Start() {
-		if(playerRB == null) playerRB = GameObject.Find("Player").GetComponent<Rigidbody>();
-		if(animator == null) animator = GameObject.Find("Player").GetComponent<Animator>();
-		if(playerMovm == null) playerMovm = GameObject.Find("Player").GetComponent<PlayerMovement>();
-		if(player == null) player = GameObject.Find("Player").GetComponent<Player>();
+		if (playerRB == null) playerRB = GameObject.Find("Player").GetComponent<Rigidbody>();
+		if (animator == null) animator = GameObject.Find("Player").GetComponent<Animator>();
+		if (playerMovm == null) playerMovm = GameObject.Find("Player").GetComponent<PlayerMovement>();
+		if (player == null) player = GameObject.Find("Player").GetComponent<Player>();
 	}
 
 	void Update() {

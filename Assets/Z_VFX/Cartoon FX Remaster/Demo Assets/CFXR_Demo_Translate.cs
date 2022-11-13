@@ -5,37 +5,30 @@
 
 using UnityEngine;
 
-namespace CartoonFX
-{
-	public class CFXR_Demo_Translate : MonoBehaviour
-	{
-		public Vector3 direction = new Vector3(0,1,0);
+namespace CartoonFX {
+	public class CFXR_Demo_Translate : MonoBehaviour {
+		public Vector3 direction = new Vector3(0, 1, 0);
 		public bool randomRotation;
 
 
 		bool initialized;
 		Vector3 initialPosition;
 
-		void Awake()
-		{
-			if (!initialized)
-			{
+		void Awake() {
+			if (!initialized) {
 				initialized = true;
 				initialPosition = this.transform.position;
 			}
 		}
 
-		void OnEnable()
-		{
+		void OnEnable() {
 			this.transform.position = initialPosition;
-			if (randomRotation)
-			{
+			if (randomRotation) {
 				this.transform.eulerAngles = Vector3.Lerp(Vector3.zero, Vector3.up * 360, Random.value);
 			}
 		}
 
-		void Update()
-		{
+		void Update() {
 			this.transform.Translate(direction * Time.deltaTime);
 		}
 	}

@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Arrow : Projectile {
@@ -13,9 +10,9 @@ public class Arrow : Projectile {
 	}
 
 	new private void OnTriggerEnter(Collider other) {
-		if (hitsOnlyPlayer && other.gameObject.tag != "Player") return;
+		if (hitsOnlyPlayer && other.gameObject.tag != "Player" || lifeTime == 0) return;
 
 		base.OnTriggerEnter(other);
-		if (destroyOnImpact) DestroyProjectile();
+		if (destroyOnImpact) DestroyObject();
 	}
 }

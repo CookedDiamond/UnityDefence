@@ -13,7 +13,7 @@ public class Armour : Defence, IDefence {
 		int increasedArmour = baseStats.IncreasedArmour;
 		foreach (var stat in stats) flatArmour += stat.FlatArmour;
 		foreach (var stat in stats) increasedArmour += stat.IncreasedArmour;
-		return (int)Math.Clamp(flatArmour * (1+increasedArmour/100f), 0, baseStats.MaxArmour);
+		return (int)Math.Clamp(flatArmour * (1 + increasedArmour / 100f), 0, baseStats.MaxArmour);
 	}
 }
 

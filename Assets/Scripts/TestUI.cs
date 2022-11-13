@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -28,7 +26,7 @@ public class TestUI : MonoBehaviour {
 	}
 
 	private void onButtonClick() {
-		player.DealDamage(damage, DamageType.physical);
+		player.GetDamage(damage, DamageType.physical);
 	}
 
 	private void onTextField(ChangeEvent<string> str) {

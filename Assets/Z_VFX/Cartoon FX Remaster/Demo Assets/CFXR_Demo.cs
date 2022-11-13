@@ -7,29 +7,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CartoonFX
-{
-	public class CFXR_Demo : MonoBehaviour
-	{
+namespace CartoonFX {
+	public class CFXR_Demo : MonoBehaviour {
 		//----------------------------------------------------------------------------------------------------------------------------
 		// UI
 
-		public void NextEffect()
-		{
+		public void NextEffect() {
 			index++;
 			WrapIndex();
 			PlayAtIndex();
 		}
 
-		public void PreviousEffect()
-		{
+		public void PreviousEffect() {
 			index--;
 			WrapIndex();
 			PlayAtIndex();
 		}
 
-		public void ToggleSlowMo()
-		{
+		public void ToggleSlowMo() {
 			slowMotion = !slowMotion;
 
 			Time.timeScale = slowMotion ? 0.33f : 1.0f;
@@ -40,8 +35,7 @@ namespace CartoonFX
 			lblSlowMotion.color = color;
 		}
 
-		public void ToggleCamera()
-		{
+		public void ToggleCamera() {
 			rotateCamera = !rotateCamera;
 
 			var color = Color.white;
@@ -50,8 +44,7 @@ namespace CartoonFX
 			lblCameraRotation.color = color;
 		}
 
-		public void ToggleGround()
-		{
+		public void ToggleGround() {
 			showGround = !showGround;
 
 			ground.SetActive(showGround);
@@ -62,8 +55,7 @@ namespace CartoonFX
 			lblShowGround.color = color;
 		}
 
-		public void ToggleCameraShake()
-		{
+		public void ToggleCameraShake() {
 			CFXR_Effect.GlobalDisableCameraShake = !CFXR_Effect.GlobalDisableCameraShake;
 
 			var color = Color.white;
@@ -72,8 +64,7 @@ namespace CartoonFX
 			lblCamShake.color = color;
 		}
 
-		public void ToggleEffectsLights()
-		{
+		public void ToggleEffectsLights() {
 			CFXR_Effect.GlobalDisableLights = !CFXR_Effect.GlobalDisableLights;
 
 			var color = Color.white;
@@ -82,8 +73,7 @@ namespace CartoonFX
 			lblLights.color = color;
 		}
 
-		public void ToggleBloom()
-		{
+		public void ToggleBloom() {
 			bloom.enabled = !bloom.enabled;
 
 			var color = Color.white;
@@ -92,8 +82,7 @@ namespace CartoonFX
 			lblBloom.color = color;
 		}
 
-		public void ResetCam()
-		{
+		public void ResetCam() {
 			Camera.main.transform.position = camInitialPosition;
 			Camera.main.transform.rotation = camInitialRotation;
 		}
@@ -135,14 +124,12 @@ namespace CartoonFX
 		Vector3 camInitialPosition;
 		Quaternion camInitialRotation;
 
-		void Awake()
-		{
+		void Awake() {
 			camInitialPosition = Camera.main.transform.position;
 			camInitialRotation = Camera.main.transform.rotation;
 
 			var list = new List<GameObject>();
-			for (int i = 0; i < this.transform.childCount; i++)
-			{
+			for (int i = 0; i < this.transform.childCount; i++) {
 				list.Add(this.transform.GetChild(i).gameObject);
 			}
 			effectsList = list.ToArray();
@@ -151,39 +138,29 @@ namespace CartoonFX
 			UpdateLabels();
 		}
 
-		void Update()
-		{
-			if (rotateCamera)
-			{
+		void Update() {
+			if (rotateCamera) {
 				demoCamera.RotateAround(Vector3.zero, Vector3.up, rotationSpeed * Time.deltaTime);
 			}
 
-			if (Input.GetKeyDown(KeyCode.Space))
-			{
-				if (currentEffect != null)
-				{
+			if (Input.GetKeyDown(KeyCode.Space)) {
+				if (currentEffect != null) {
 					var ps = currentEffect.GetComponent<ParticleSystem>();
-					if (ps == null)
-					{
+					if (ps == null) {
 						return;
 					}
 
-					if (ps.isEmitting)
-					{
+					if (ps.isEmitting) {
 						ps.Stop(true);
 					}
-					else
-					{
-						if (!currentEffect.gameObject.activeSelf)
-						{
+					else {
+						if (!currentEffect.gameObject.activeSelf) {
 							currentEffect.SetActive(true);
 						}
-						else
-						{
+						else {
 							ps.Play(true);
 							var cfxrEffects = currentEffect.GetComponentsInChildren<CFXR_Effect>();
-							foreach (var cfxr in cfxrEffects)
-							{
+							foreach (var cfxr in cfxrEffects) {
 								cfxr.ResetState();
 							}
 						}
@@ -191,54 +168,43 @@ namespace CartoonFX
 				}
 			}
 
-			if (Input.GetKeyDown(KeyCode.Delete) || Input.GetKeyDown(KeyCode.Backspace))
-			{
-				if (currentEffect != null)
-				{
+			if (Input.GetKeyDown(KeyCode.Delete) || Input.GetKeyDown(KeyCode.Backspace)) {
+				if (currentEffect != null) {
 					currentEffect.SetActive(false);
 					currentEffect.SetActive(true);
 				}
 			}
 
-			if (Input.GetKeyDown(KeyCode.LeftArrow))
-			{
+			if (Input.GetKeyDown(KeyCode.LeftArrow)) {
 				PreviousEffect();
 			}
 
-			if (Input.GetKeyDown(KeyCode.RightArrow))
-			{
+			if (Input.GetKeyDown(KeyCode.RightArrow)) {
 				NextEffect();
 			}
 
-			if (Input.GetMouseButtonDown(0))
-			{
+			if (Input.GetMouseButtonDown(0)) {
 				var ray = demoCamera.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
-				if (Physics.Raycast(ray))
-				{
-					if (currentEffect != null)
-					{
+				if (Physics.Raycast(ray)) {
+					if (currentEffect != null) {
 						currentEffect.SetActive(false);
 						currentEffect.SetActive(true);
 					}
 				}
 			}
 
-			if (Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2))
-			{
+			if (Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2)) {
 				ResetCam();
 			}
 
 			float scroll = Input.GetAxis("Mouse ScrollWheel");
-			if (scroll != 0f)
-			{
+			if (scroll != 0f) {
 				Camera.main.transform.Translate(Vector3.forward * (scroll < 0f ? -1f : 1f), Space.Self);
 			}
 		}
 
-		public void PlayAtIndex()
-		{
-			if (currentEffect != null)
-			{
+		public void PlayAtIndex() {
+			if (currentEffect != null) {
 				currentEffect.SetActive(false);
 			}
 
@@ -248,16 +214,14 @@ namespace CartoonFX
 			UpdateLabels();
 		}
 
-		void WrapIndex()
-		{
+		void WrapIndex() {
 			if (index < 0) index = effectsList.Length - 1;
 			if (index >= effectsList.Length) index = 0;
 		}
 
-		void UpdateLabels()
-		{
+		void UpdateLabels() {
 			labelEffect.text = currentEffect.name;
-			labelIndex.text = string.Format("{0}/{1}", (index+1), effectsList.Length);
+			labelIndex.text = string.Format("{0}/{1}", (index + 1), effectsList.Length);
 		}
 	}
 }

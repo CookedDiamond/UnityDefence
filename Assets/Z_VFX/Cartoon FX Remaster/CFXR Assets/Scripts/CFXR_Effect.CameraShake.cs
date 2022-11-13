@@ -5,15 +5,11 @@ using UnityEngine.Rendering;
 using UnityEditor;
 #endif
 
-namespace CartoonFX
-{
-	public partial class CFXR_Effect : MonoBehaviour
-	{
+namespace CartoonFX {
+	public partial class CFXR_Effect : MonoBehaviour {
 		[System.Serializable]
-		public class CameraShake
-		{
-			public enum ShakeSpace
-			{
+		public class CameraShake {
+			public enum ShakeSpace {
 				Screen,
 				World
 			}
@@ -50,55 +46,46 @@ namespace CartoonFX
 			static List<CameraShake> s_CameraShakes = new List<CameraShake>();
 
 #if UNITY_2019_1_OR_NEWER
-			static void OnPreRenderCamera_Static_URP(ScriptableRenderContext context, Camera cam)
-			{
+			static void OnPreRenderCamera_Static_URP(ScriptableRenderContext context, Camera cam) {
 				OnPreRenderCamera_Static(cam);
 			}
-			static void OnPostRenderCamera_Static_URP(ScriptableRenderContext context, Camera cam)
-			{
+			static void OnPostRenderCamera_Static_URP(ScriptableRenderContext context, Camera cam) {
 				OnPostRenderCamera_Static(cam);
 			}
 #endif
 
-			static void OnPreRenderCamera_Static(Camera cam)
-			{
+			static void OnPreRenderCamera_Static(Camera cam) {
 				int count = s_CameraShakes.Count;
-				for (int i = 0; i < count; i++)
-				{
+				for (int i = 0; i < count; i++) {
 					var ss = s_CameraShakes[i];
 					ss.onPreRenderCamera(cam);
 				}
 			}
 
-			static void OnPostRenderCamera_Static(Camera cam)
-			{
+			static void OnPostRenderCamera_Static(Camera cam) {
 				int count = s_CameraShakes.Count;
-				for (int i = count-1; i >= 0; i--)
-				{
+				for (int i = count - 1; i >= 0; i--) {
 					var ss = s_CameraShakes[i];
 					ss.onPostRenderCamera(cam);
 				}
 			}
 
-			static void RegisterStaticCallback(CameraShake cameraShake)
-			{
+			static void RegisterStaticCallback(CameraShake cameraShake) {
 				s_CameraShakes.Add(cameraShake);
 
-				if (!s_CallbackRegistered)
-				{
+				if (!s_CallbackRegistered) {
 #if UNITY_2019_1_OR_NEWER
-	#if UNITY_2019_3_OR_NEWER
+#if UNITY_2019_3_OR_NEWER
 					if (GraphicsSettings.currentRenderPipeline == null)
-	#else
+#else
 					if (GraphicsSettings.renderPipelineAsset == null)
-	#endif
+#endif
 					{
 						// Built-in Render Pipeline
 						Camera.onPreRender += OnPreRenderCamera_Static;
 						Camera.onPostRender += OnPostRenderCamera_Static;
 					}
-					else
-					{
+					else {
 						// URP
 						RenderPipelineManager.beginCameraRendering += OnPreRenderCamera_Static_URP;
 						RenderPipelineManager.endCameraRendering += OnPostRenderCamera_Static_URP;
@@ -112,25 +99,22 @@ namespace CartoonFX
 				}
 			}
 
-			static void UnregisterStaticCallback(CameraShake cameraShake)
-			{
+			static void UnregisterStaticCallback(CameraShake cameraShake) {
 				s_CameraShakes.Remove(cameraShake);
 
-				if (s_CallbackRegistered && s_CameraShakes.Count == 0)
-				{
+				if (s_CallbackRegistered && s_CameraShakes.Count == 0) {
 #if UNITY_2019_1_OR_NEWER
-	#if UNITY_2019_3_OR_NEWER
+#if UNITY_2019_3_OR_NEWER
 					if (GraphicsSettings.currentRenderPipeline == null)
-	#else
+#else
 					if (GraphicsSettings.renderPipelineAsset == null)
-	#endif
+#endif
 					{
 						// Built-in Render Pipeline
 						Camera.onPreRender -= OnPreRenderCamera_Static;
 						Camera.onPostRender -= OnPostRenderCamera_Static;
 					}
-					else
-					{
+					else {
 						// URP
 						RenderPipelineManager.beginCameraRendering -= OnPreRenderCamera_Static_URP;
 						RenderPipelineManager.endCameraRendering -= OnPostRenderCamera_Static_URP;
@@ -146,49 +130,40 @@ namespace CartoonFX
 
 			//--------------------------------------------------------------------------------------------------------------------------------
 
-			void onPreRenderCamera(Camera cam)
-			{
+			void onPreRenderCamera(Camera cam) {
 #if UNITY_EDITOR
 				//add scene view camera if necessary
-				if (SceneView.currentDrawingSceneView != null && SceneView.currentDrawingSceneView.camera == cam && !camerasPreRenderPosition.ContainsKey(cam))
-				{
+				if (SceneView.currentDrawingSceneView != null && SceneView.currentDrawingSceneView.camera == cam && !camerasPreRenderPosition.ContainsKey(cam)) {
 					camerasPreRenderPosition.Add(cam, cam.transform.localPosition);
 				}
 #endif
 
-				if (isShaking && camerasPreRenderPosition.ContainsKey(cam))
-				{
+				if (isShaking && camerasPreRenderPosition.ContainsKey(cam)) {
 					camerasPreRenderPosition[cam] = cam.transform.localPosition;
 
 					if (Time.timeScale <= 0) return;
 
-					switch (shakeSpace)
-					{
+					switch (shakeSpace) {
 						case ShakeSpace.Screen: cam.transform.localPosition += cam.transform.rotation * shakeVector; break;
 						case ShakeSpace.World: cam.transform.localPosition += shakeVector; break;
 					}
 				}
 			}
 
-			void onPostRenderCamera(Camera cam)
-			{
-				if (camerasPreRenderPosition.ContainsKey(cam))
-				{
+			void onPostRenderCamera(Camera cam) {
+				if (camerasPreRenderPosition.ContainsKey(cam)) {
 					cam.transform.localPosition = camerasPreRenderPosition[cam];
 				}
 			}
 
-			public void fetchCameras()
-			{
+			public void fetchCameras() {
 #if UNITY_EDITOR
-				if (!EditorApplication.isPlayingOrWillChangePlaymode)
-				{
+				if (!EditorApplication.isPlayingOrWillChangePlaymode) {
 					return;
 				}
 #endif
 
-				foreach (var cam in cameras)
-				{
+				foreach (var cam in cameras) {
 					if (cam == null) continue;
 
 					camerasPreRenderPosition.Remove(cam);
@@ -196,26 +171,21 @@ namespace CartoonFX
 
 				cameras.Clear();
 
-				if (useMainCamera && Camera.main != null)
-				{
+				if (useMainCamera && Camera.main != null) {
 					cameras.Add(Camera.main);
 				}
 
-				foreach (var cam in cameras)
-				{
+				foreach (var cam in cameras) {
 					if (cam == null) continue;
 
-					if (!camerasPreRenderPosition.ContainsKey(cam))
-					{
+					if (!camerasPreRenderPosition.ContainsKey(cam)) {
 						camerasPreRenderPosition.Add(cam, Vector3.zero);
 					}
 				}
 			}
 
-			public void StartShake()
-			{
-				if (isShaking)
-				{
+			public void StartShake() {
+				if (isShaking) {
 					StopShake();
 				}
 
@@ -223,51 +193,41 @@ namespace CartoonFX
 				RegisterStaticCallback(this);
 			}
 
-			public void StopShake()
-			{
+			public void StopShake() {
 				isShaking = false;
 				shakeVector = Vector3.zero;
 				UnregisterStaticCallback(this);
 			}
 
-			public void animate(float time)
-			{
+			public void animate(float time) {
 #if UNITY_EDITOR
-				if (!editorPreview && !EditorApplication.isPlaying)
-				{
+				if (!editorPreview && !EditorApplication.isPlaying) {
 					shakeVector = Vector3.zero;
 					return;
 				}
 #endif
 
 				float totalDuration = duration + delay;
-				if (time < totalDuration)
-				{
-					if (time < delay)
-					{
+				if (time < totalDuration) {
+					if (time < delay) {
 						return;
 					}
 
-					if (!isShaking)
-					{
+					if (!isShaking) {
 						this.StartShake();
 					}
 
 					// duration of the camera shake
-					float delta = Mathf.Clamp01(time/totalDuration);
+					float delta = Mathf.Clamp01(time / totalDuration);
 
 					// delay between each camera move
-					if (shakesDelay > 0)
-					{
+					if (shakesDelay > 0) {
 						delaysTimer += Time.deltaTime;
-						if (delaysTimer < shakesDelay)
-						{
+						if (delaysTimer < shakesDelay) {
 							return;
 						}
-						else
-						{
-							while (delaysTimer >= shakesDelay)
-							{
+						else {
+							while (delaysTimer >= shakesDelay) {
 								delaysTimer -= shakesDelay;
 							}
 						}
@@ -277,8 +237,7 @@ namespace CartoonFX
 					var shakeVec = Vector3.Scale(randomVec, shakeStrength) * (Random.value > 0.5f ? -1 : 1);
 					shakeVector = shakeVec * shakeCurve.Evaluate(delta) * GLOBAL_CAMERA_SHAKE_MULTIPLIER;
 				}
-				else if (isShaking)
-				{
+				else if (isShaking) {
 					StopShake();
 				}
 			}

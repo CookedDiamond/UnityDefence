@@ -28,27 +28,23 @@
 
 using UnityEngine;
 
-namespace Kino
-{
+namespace Kino {
 	[ExecuteInEditMode]
 	[RequireComponent(typeof(Camera))]
 	[ImageEffectAllowedInSceneView]
-	public class Bloom : MonoBehaviour
-	{
+	public class Bloom : MonoBehaviour {
 		#region Public Properties
 
 		/// Prefilter threshold (gamma-encoded)
 		/// Filters out pixels under this level of brightness.
-		public float thresholdGamma
-		{
+		public float thresholdGamma {
 			get { return Mathf.Max(_threshold, 0); }
 			set { _threshold = value; }
 		}
 
 		/// Prefilter threshold (linearly-encoded)
 		/// Filters out pixels under this level of brightness.
-		public float thresholdLinear
-		{
+		public float thresholdLinear {
 			get { return GammaToLinear(thresholdGamma); }
 			set { _threshold = LinearToGamma(value); }
 		}
@@ -59,8 +55,7 @@ namespace Kino
 
 		/// Soft-knee coefficient
 		/// Makes transition between under/over-threshold gradual.
-		public float softKnee
-		{
+		public float softKnee {
 			get { return _softKnee; }
 			set { _softKnee = value; }
 		}
@@ -72,8 +67,7 @@ namespace Kino
 		/// Bloom radius
 		/// Changes extent of veiling effects in a screen
 		/// resolution-independent fashion.
-		public float radius
-		{
+		public float radius {
 			get { return _radius; }
 			set { _radius = value; }
 		}
@@ -85,8 +79,7 @@ namespace Kino
 
 		/// Bloom intensity
 		/// Blend factor of the result image.
-		public float intensity
-		{
+		public float intensity {
 			get { return Mathf.Max(_intensity, 0); }
 			set { _intensity = value; }
 		}
@@ -97,8 +90,7 @@ namespace Kino
 
 		/// High quality mode
 		/// Controls filter quality and buffer resolution.
-		public bool highQuality
-		{
+		public bool highQuality {
 			get { return _highQuality; }
 			set { _highQuality = value; }
 		}
@@ -113,8 +105,7 @@ namespace Kino
 		[Tooltip("Reduces flashing noise with an additional filter.")]
 		bool _antiFlicker = true;
 
-		public bool antiFlicker
-		{
+		public bool antiFlicker {
 			get { return _antiFlicker; }
 			set { _antiFlicker = value; }
 		}
@@ -134,8 +125,7 @@ namespace Kino
 		RenderTexture[] _blurBuffer1 = new RenderTexture[kMaxIterations];
 		RenderTexture[] _blurBuffer2 = new RenderTexture[kMaxIterations];
 
-		float LinearToGamma(float x)
-		{
+		float LinearToGamma(float x) {
 #if UNITY_5_3_OR_NEWER
 			return Mathf.LinearToGammaSpace(x);
 #else
@@ -146,8 +136,7 @@ namespace Kino
 #endif
 		}
 
-		float GammaToLinear(float x)
-		{
+		float GammaToLinear(float x) {
 #if UNITY_5_3_OR_NEWER
 			return Mathf.GammaToLinearSpace(x);
 #else
@@ -162,20 +151,17 @@ namespace Kino
 
 		#region MonoBehaviour Functions
 
-		void OnEnable()
-		{
+		void OnEnable() {
 			var shader = _shader ? _shader : Shader.Find("Hidden/Kino/Bloom");
 			_material = new Material(shader);
 			_material.hideFlags = HideFlags.DontSave;
 		}
 
-		void OnDisable()
-		{
+		void OnDisable() {
 			DestroyImmediate(_material);
 		}
 
-		void OnRenderImage(RenderTexture source, RenderTexture destination)
-		{
+		void OnRenderImage(RenderTexture source, RenderTexture destination) {
 			var useRGBM = Application.isMobilePlatform;
 
 			// source texture size
@@ -183,8 +169,7 @@ namespace Kino
 			var th = source.height;
 
 			// halve the texture size for the low quality mode
-			if (!_highQuality)
-			{
+			if (!_highQuality) {
 				tw /= 2;
 				th /= 2;
 			}
@@ -219,8 +204,7 @@ namespace Kino
 
 			// construct a mip pyramid
 			var last = prefiltered;
-			for (var level = 0; level < iterations; level++)
-			{
+			for (var level = 0; level < iterations; level++) {
 				_blurBuffer1[level] = RenderTexture.GetTemporary(
 					last.width / 2, last.height / 2, 0, rtFormat
 				);
@@ -232,8 +216,7 @@ namespace Kino
 			}
 
 			// upsample and combine loop
-			for (var level = iterations - 2; level >= 0; level--)
-			{
+			for (var level = iterations - 2; level >= 0; level--) {
 				var basetex = _blurBuffer1[level];
 				_material.SetTexture("_BaseTex", basetex);
 
@@ -252,8 +235,7 @@ namespace Kino
 			Graphics.Blit(last, destination, _material, pass);
 
 			// release the temporary buffers
-			for (var i = 0; i < kMaxIterations; i++)
-			{
+			for (var i = 0; i < kMaxIterations; i++) {
 				if (_blurBuffer1[i] != null)
 					RenderTexture.ReleaseTemporary(_blurBuffer1[i]);
 
